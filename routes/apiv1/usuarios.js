@@ -5,14 +5,18 @@ const router = express.Router();
 
 const mongoose = require('mongoose');
 
-//Le pedimos a mongoose el modelo de Anuncio
-const Anuncio = mongoose.model('Anuncio');
+//Le pedimos a mongoose el modelo de Usuario
+const Usuario = mongoose.model('Usuario');
+
+const jwt = require('jsonwebtoken');
+const config = require('../../config');
 
 //GET /apiv1/usuarios
-router.get('/', (req, res, next) => {
+/*router.get('/', (req, res, next) => {
     const nombre = req.query.nombre;
     const email = req.query.email;
     const clave = req.query.clave;
+
     const limit = parseInt(req.query.limit);
     const skip = parseInt(req.query.skip);
     const select = req.query.select;
@@ -32,21 +36,21 @@ router.get('/', (req, res, next) => {
         criterios.clave = clave;
     }
 
-    Usuario.list(citerios, limit, select, sort, (err, usuarios) => {
+    Usuario.list(criterios, limit, skip, select, sort, (err, usuarios) => {
         if(err){
             next(err);
             return;
         }
         res.json({success: true, result: usuarios});
     });
-});
+});*/
 
 //POST /apiv1/usuarios
-/*router.post('/login', (req, res, next) => {
-    //REcibimos las credenciales
-    const nombre = req.body.nombre;
-    const email = req.body.email;
-    const clave = req.body.clave;
+router.post('/authenticate', (req, res, next) => {
+    //Recibimos las credenciales
+    const nombre = req.query.nombre;
+    const email = req.query.email;
+    const clave = req.query.clave;
 
     Usuario.findOne({email: email}).exec((err, usuario) => {
         if(err){
@@ -70,6 +74,6 @@ router.get('/', (req, res, next) => {
             res.json({success: true, token: token});
         });
     });
-});*/
+});
 
 module.exports = router;

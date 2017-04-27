@@ -13,13 +13,14 @@ router.get('/', (req, res, next) => {
     //console.log('Usuario autenticado con _id: ', req.usuario_id)
 
     //Recogemos parametros de busqueda
-    const nombre = req.query.name;
+    const nombre = req.query.nombre;
     const precio = req.query.precio;
     const venta = req.query.venta;
     const foto = req.query.foto;
     const tags = req.query.tags;
+
     const limit = parseInt(req.query.limit);
-    const skip = parseInt(req.query.skip);
+    const skip = parseInt(req.query.start);
     const select = req.query.select;
     const sort = req.query.sort;
 
@@ -27,40 +28,45 @@ router.get('/', (req, res, next) => {
 
     //Si nombre no tiene nada no me interesa filtrar
     if(nombre){
-        criterios.name = name;
+        criterios.nombre = new RegExp('^'+ req.query.nombre, "i");
     }
 
     if(precio){
-        criterios.precio = precio;
+        const rango = precio.split('-');
+       
+        if(rango.length > 1){
+            criterios.precio = {};
+            if(rango[0] !== undefined && rango[0] !== ''){
+                criterios.precio.$gte = parseInt(rango[0]);
+            }
+            if(rango[1] !== undefined && rango[1] !== ''){
+                console.log(rango[1]);
+                criterios.precio.$lte = parseInt(rango[1]);
+            }
+        }
+        else {
+            criterios.precio = parseInt(rango[0]);
+        }
     }
 
     if(venta){
-        criterios.venta = true;
+        criterios.venta = venta;
     }
 
     if(tags){
-        criterios.tags = tags;
+        const tagArray = tags.split(',');
+
+        criterios.tags = {};
+        criterios.tags.$in = tagArray;
     }
 
     //Recuperamos una lista de anuncios
-    Anuncio.list(criterios, 0, 0, 0, 0, (err, anuncios) =>{
+    Anuncio.list(criterios, limit, skip, select, sort, (err, anuncios) =>{
         if(err){
             next(err);
             return;
         }
         res.json({success: true, result: anuncios});
-    });
-});
-
-//GET /apiv1/anuncios/:id
-router.get('/:id', (req, res, next) => {
-    const _id = req.params.id;
-    Anuncio.findOne({_id: _id}).exec((err, anuncio) => {
-        if(err){
-            next(err);
-            return;
-        }
-        res.json({success: true, result: anuncio});
     });
 });
 

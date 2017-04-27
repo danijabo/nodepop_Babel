@@ -1,4 +1,11 @@
 {
+    "usuarios": [
+        {
+            "nombre": "Alvaro",
+            "email": "alvaro@babel",
+            "clave": "alvaro"
+        }
+    ],
     "anuncios": [
         {
             "nombre": "Bicicleta",
